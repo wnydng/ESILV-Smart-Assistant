@@ -27,7 +27,7 @@ Dots OCR) and multimodal LLMs (e.g., LLaVA, Pixtral, or Llama 3.2 Vision) deploy
 via Ollama or integrated through Hugging Face / GCP endpoints.
 
 ## Tasks repartition
-
+à compléter
 
 ## Data used
 à compléter
