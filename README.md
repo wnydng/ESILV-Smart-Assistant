@@ -1,5 +1,8 @@
 # LLM & GenAI Project : ESILV Smart Assistant
 
+<img width="2000" height="1050" alt="image" src="https://github.com/user-attachments/assets/922367e2-3127-4050-ab03-c7d8a2e2f90f" />
+
+
 ## Team 41
 
 - Lisa Naccache
