@@ -1,0 +1,8 @@
+streamlit
+ollama
+numpy
+faiss-cpu
+trafilatura
+beautifulsoup4
+langchain
+sentence-transformers
