@@ -69,6 +69,58 @@ Tu n'inventes rien.
 
 
 # ----------------------------------------------------
+# DÉTECTION AUTOMATIQUE D'AGENT
+# ----------------------------------------------------
+
+AGENT_KEYWORDS = {
+    "Admissions": ["admissions"],
+    "Formations": ["formations"],
+    "International": ["international"],
+}
+
+def detect_agent(question: str, top_k: int = 5) -> str:
+    """
+    Détecte l'agent approprié basé sur les rubrics des documents retrouvés.
+    Récupère les top_k documents via FAISS et compte les rubrics.
+    """
+    try:
+        # Embedding de la question
+        q_vec = embed(question)
+        q_vec_array = np.expand_dims(q_vec, axis=0)
+        
+        # Recherche FAISS
+        D, I = index.search(q_vec_array, top_k)
+        
+        # Compter les rubrics
+        rubric_counts = {}
+        for idx in I[0]:
+            doc = mapping.get(str(idx), {})
+            rubric = doc.get("rubric", "").lower()
+            
+            # Mapper rubric vers agent
+            if "admission" in rubric or "concour" in rubric:
+                agent = "Admissions"
+            elif "formation" in rubric or "programme" in rubric or "cursus" in rubric:
+                agent = "Formations"
+            elif "international" in rubric or "échange" in rubric or "mobilité" in rubric:
+                agent = "International"
+            else:
+                agent = "Admissions"  # Par défaut
+            
+            rubric_counts[agent] = rubric_counts.get(agent, 0) + 1
+        
+        # Retourner l'agent avec le plus de hits
+        if rubric_counts:
+            best_agent = max(rubric_counts, key=rubric_counts.get)
+            return best_agent
+        
+        return "Admissions"  # Fallback
+    except Exception as e:
+        print(f"⚠️ Erreur lors de la détection d'agent : {e}")
+        return "Admissions"  # Fallback en cas d'erreur
+
+
+# ----------------------------------------------------
 # GENERATION LLM VIA OLLAMA (llama3.2:3b-instruct)
 # ----------------------------------------------------
 
