@@ -26,6 +26,11 @@ Students are expected to experiment with open-source OCR engines (such as DeepSe
 Dots OCR) and multimodal LLMs (e.g., LLaVA, Pixtral, or Llama 3.2 Vision) deployed locally
 via Ollama or integrated through Hugging Face / GCP endpoints.
 
+# How to launch this project
+
+pip install -r .\requirements.txt
+streamlit run .\code\app\streamlit_app.py
+
 ## Tasks repartition
 à compléter
 
