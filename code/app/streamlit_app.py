@@ -14,7 +14,7 @@ import streamlit as st
 sys.path.append(os.path.dirname(__file__))
 
 try:
-    import rag_agent
+    import rag_agent_v2 as rag_agent
 except Exception as e:
     st.error(f"Impossible d'importer le module rag_agent: {e}")
     st.stop()
@@ -27,49 +27,113 @@ st.title("ESILV — Chatbot")
 # Thème adapté ESILV : accents en #ce1052 ; on conserve la couleur des bulles définies plus bas
 st.markdown(
     """
-    <style>
-    :root { --esilv-primary: #ce1052; --esilv-dark: #8a003f; }
+<style>
+:root {
+    --esilv-primary: #ce1052;
+    --bg-app: #f3f4f6;
+}
 
-    /* Page global */
-    body {
-        background: #ffffff;
-        color: #111111;
+h3 {
+    color: #ce1052;
+    font-weight: 800;
+    background: -webkit-linear-gradient(left,#ce1052,#5C061E );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Fond général */
+html, body, [data-testid="stAppViewContainer"] {
+    background-color: var(--bg-app);
+}
+
+/* Container chat */
+.chat-row {
+    display: flex;
+    width: 100%;
+    margin: 6px 0;
+}
+
+/* Alignements */
+.chat-left {
+    justify-content: flex-start;
+}
+.chat-right {
+    justify-content: flex-end;
+}
+
+/* Bulles */
+.user, .bot {
+    padding: 12px 14px;
+    border-radius: 14px;
+    max-width: 65%;
+    word-wrap: break-word;
+    line-height: 1.4;
+}
+
+/* Responsive mobile */
+@media (max-width: 768px) {
+    .user, .bot {
+        max-width: 90%;
     }
+}
 
-    /* Sidebar styling */
-    section[data-testid="stSidebar"] > div {
-        border-left: 6px solid var(--esilv-primary);
-    }
-    section[data-testid="stSidebar"] h2 {
-        color: var(--esilv-primary);
-    }
+/* User */
+.user {
+    background: #ffffff;
+    color: #000;
+    border: 1px solid #ddd;
+    border-bottom-right-radius: 4px;
+}
 
-    /* Headings and accents */
-    h1, h2, h3 { color: var(--esilv-primary); }
-    a { color: var(--esilv-primary); }
+/* Bot */
+.bot {
+    background: var(--esilv-primary);
+    color: white;
+    border-bottom-left-radius: 4px;
+}
 
-    /* Buttons (send / download) */
-    .stButton>button, .stDownloadButton>button {
-        background-color: var(--esilv-primary) !important;
-        color: #ffffff !important;
-        border-radius: 8px !important;
-        padding: 6px 12px !important;
-        border: none !important;
-    }
+/* ===== Sidebar globale ===== */
+section[data-testid="stSidebar"] {
+    background-color: #D9DCE2;
+}
 
-    /* Chat bubbles layout */
-    .chat-row {display:flex; align-items:flex-start; margin-bottom: 6px}
-    .chat-left {flex:1; display:flex; justify-content:flex-start}
-    .chat-right {flex:1; display:flex; justify-content:flex-end}
-    /* conserver les couleurs des bulles (ne pas modifier) */
-    .user {background:#ffffff; color:#000000; border-radius:12px; padding:10px; margin:6px; max-width:70%; word-wrap:break-word}
-    .bot {background:#ce1052; color:#ffffff; border-radius:12px; padding:10px; margin:6px; max-width:70%; word-wrap:break-word}
+section[data-testid="stSidebar"] > div {
+    padding: 18px 14px;
+    border-left: 6px solid var(--esilv-primary);
+}
 
-    /* Expander header accent */
-    .streamlit-expanderHeader { color: var(--esilv-primary); }
-    </style>
+/* Titres sidebar */
+section[data-testid="stSidebar"] h2,
+section[data-testid="stSidebar"] h3 {
+    color: var(--esilv-primary);
+    margin-bottom: 8px;
+}
+
+
+
+
+/* ===== Cartes de section ===== */
+.sidebar-card {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 16px;
+    border: 1px solid #e5e7eb;
+}
+
+/* Séparateur discret */
+.sidebar-separator {
+    height: 1px;
+    background: #e5e7eb;
+    margin: 12px 0;
+}
+
+
+
+
+</style>
     """,
-    unsafe_allow_html=True,
+    unsafe_allow_html=True
 )
 
 agent_map = {
@@ -77,6 +141,31 @@ agent_map = {
     "Formations": rag_agent.AGENT_FORMATION,
     "International": rag_agent.AGENT_INTERNATIONAL,
 }
+
+def answer_uses_sources(answer: str, sources: list) -> bool:
+    if not answer or not sources:
+        return False
+
+    answer_lower = answer.lower()
+
+    for s in sources:
+        snippet = s.get("snippet", "")
+        if not snippet:
+            continue
+
+        # On prend quelques mots clés significatifs
+        words = [
+            w for w in snippet.lower().split()
+            if len(w) > 6
+        ][:5]
+
+        matches = sum(1 for w in words if w in answer_lower)
+
+        if matches >= 2:
+            return True
+
+    return False
+
 
 with st.sidebar:
     # Logo (base64 PNG) affiché en haut à gauche, au-dessus du panneau Paramètres
@@ -88,10 +177,11 @@ with st.sidebar:
         st.image(img_bytes, width=120)
     except Exception:
         pass
-    st.header("Paramètres")
+    #st.header("Paramètres")
 
     # --- Contact form (required fields only) ---
-    st.subheader("S'inscrire / Être recontacté")
+
+    st.subheader("Formulaire contact:")
     CONTACTS_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "data", "contacts")
     os.makedirs(CONTACTS_DIR, exist_ok=True)
     CONTACTS_CSV = os.path.join(CONTACTS_DIR, "contacts.csv")
@@ -180,15 +270,16 @@ with st.sidebar:
             st.download_button("Download CSV", data=buf.getvalue(), file_name="history.csv", mime="text/csv")
 
 # Paramètres fixes (non modifiables par l'utilisateur)
-top_k = 10
-truncate_chars = 200
+top_k = 5
+truncate_chars = 180
 
 if "history" not in st.session_state:
     st.session_state.history = []
 
-question = st.text_area("Question", height=130)
+question = st.chat_input("Posez votre question…")
 
-if st.button("Envoyer") and question.strip():
+
+if question:
     # Indiquer que l'agent tourne
     with st.spinner("Agent en cours..."):
         # 1) Détection d'agent (utilise FAISS en interne)
@@ -225,11 +316,15 @@ if st.button("Envoyer") and question.strip():
     found = False
     if answer:
         a_lower = answer.lower()
-        if ("je ne sais pas" in a_lower) or ("je n'ai pas" in a_lower) or ("i don't know" in a_lower):
+
+        if (
+                "je ne sais pas" in a_lower
+                or "je n'ai pas" in a_lower
+                or "je ne sais pas répondre" in a_lower
+        ):
             found = False
         else:
-            # considérer trouvé si on a des sources récupérées
-            found = len(sources) > 0
+            found = answer_uses_sources(answer, sources)
 
     if answer is not None:
         st.session_state.history.append({
@@ -242,44 +337,31 @@ if st.button("Envoyer") and question.strip():
             "found": found,
         })
 
-for i, turn in enumerate(reversed(st.session_state.history)):
-    # Question (utilisateur) — alignée à droite
+# =========================
+# AFFICHAGE DU CHAT
+# =========================
+for turn in reversed(st.session_state.history):
+
+    # Message utilisateur (droite)
     st.markdown(
-        '<div class="chat-row"><div class="chat-left"></div><div class="chat-right"><div class="user">'
-        + turn['question'].replace('\n', '<br>') + '</div></div></div>',
-        unsafe_allow_html=True,
+        f"""
+        <div class="chat-row chat-right">
+            <div class="user">{turn['question'].replace('\n','<br>')}</div>
+        </div>
+        """,
+        unsafe_allow_html=True
     )
 
-    # Réponse (bot) — alignée à gauche
+    # Message bot (gauche)
     st.markdown(
-        '<div class="chat-row"><div class="chat-left"><div class="bot">'
-        + turn['answer'].replace('\n', '<br>') + '</div></div><div class="chat-right"></div></div>',
-        unsafe_allow_html=True,
+        f"""
+        <div class="chat-row chat-left">
+            <div class="bot">{turn['answer'].replace('\n','<br>')}</div>
+        </div>
+        """,
+        unsafe_allow_html=True
     )
 
-    # Afficher temps uniquement si trouvé
-    if turn.get('found'):
-        st.caption(f"Recherche: {turn.get('retrieval_time','')}s • Génération: {turn.get('gen_time','')}s")
 
-    # Feedback
-    col1, col2, col3 = st.columns([1,1,4])
-    useful_key = f"useful_{i}"
-    notuseful_key = f"notuseful_{i}"
-    comment_key = f"comment_{i}"
-    if col1.button("Utile", key=useful_key):
-        st.session_state.setdefault('feedback', []).append({"index": i, "useful": True})
-    if col2.button("Pas utile", key=notuseful_key):
-        st.session_state.setdefault('feedback', []).append({"index": i, "useful": False})
-    comment = col3.text_input("Commentaire (optionnel)", key=comment_key)
-    if comment:
-        st.session_state.setdefault('feedback_comments', []).append({"index": i, "comment": comment})
 
-    # Sources (discrètes)
-    if turn.get('sources'):
-        with st.expander("Sources"):
-            for s in turn['sources']:
-                st.markdown(f"- **{s.get('title','')}** — <{s.get('url','')}>")
-                # Afficher score discrètement
-                st.caption(f"Score: {s['score']:.3f} — {s.get('snippet')}")
 
-    st.markdown("---")
