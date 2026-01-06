@@ -1,5 +1,17 @@
 # LLM & GenAI Project : ESILV Smart Assistant
 
+![Python](https://img.shields.io/badge/Python-3670A0?logo=python&logoColor=white)
+![Ollama](https://img.shields.io/badge/Ollama-000000?logo=ollama&logoColor=white)
+![LLaMA](https://img.shields.io/badge/LLaMA_3.x-6A1B9A?logo=meta&logoColor=white)
+![FAISS](https://img.shields.io/badge/FAISS-0467DF?logo=meta&logoColor=white)
+![RAG](https://img.shields.io/badge/RAG-Architecture-orange)
+![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?logo=streamlit&logoColor=white)
+![LangChain](https://img.shields.io/badge/LangChain-0F172A)
+![NumPy](https://img.shields.io/badge/NumPy-013243?logo=numpy&logoColor=white)
+![BeautifulSoup](https://img.shields.io/badge/BeautifulSoup-4B8BBE)
+![Trafilatura](https://img.shields.io/badge/Trafilatura-Text_Extraction-success)
+
+
 <img width="2000" height="1050" alt="image" src="https://github.com/wnydng/ESILV-Smart-Assistant/blob/7f6e850ba0f7e58458ce2d1ab31d1cc81a1eaaec/SCREENSHOT_APP.png" />
 
 ## Team 41
