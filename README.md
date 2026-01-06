@@ -228,5 +228,7 @@ pip install -r requirements.txt
 streamlit run code/app/streamlit_app.py
 ```
 
-### Tasks repartition
-...
+### Conclusion
+
+This project implements a complete, local, and controlled RAG pipeline, integrating web scraping, embeddings, FAISS-based retrieval, specialized LLM agents, and a user-friendly interface.
+It provides a robust, extensible, and realistic foundation for an institutional intelligent assistant dedicated to ESILV.
