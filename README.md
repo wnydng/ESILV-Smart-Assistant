@@ -1,6 +1,6 @@
 # LLM & GenAI Project : ESILV Smart Assistant
 
-<img width="2000" height="1050" alt="image" src="https://github.com/user-attachments/assets/922367e2-3127-4050-ab03-c7d8a2e2f90f" />
+<img width="2000" height="1050" alt="image" src="https://github.com/wnydng/ESILV-Smart-Assistant/blob/7f6e850ba0f7e58458ce2d1ab31d1cc81a1eaaec/SCREENSHOT_APP.png" />
 
 ## Team 41
 
@@ -120,7 +120,6 @@ Before generating embeddings, the text undergoes several preprocessing steps:
   - `rubric`
   - `title`
   - `url` or PDF reference
-
 ---
 
 ## 4. Embeddings & Vector Store
@@ -139,7 +138,6 @@ Before generating embeddings, the text undergoes several preprocessing steps:
 - Two vector stores:
   - **v2** → ESILV website content
   - **v3** → ESILV official PDF documents (brochures, diplomas, etc.)
-
 ---
 
 ## 5. Project Structure
@@ -164,7 +162,6 @@ ESILV-Smart-Assistant/
 ├── models/ # Managed automatically by Ollama
 ├── requirements.txt
 └── README.md
-
 
 ---
 
@@ -232,9 +229,7 @@ Several safeguards are implemented:
 ```bash
 pip install -r requirements.txt
 streamlit run code/app/streamlit_app.py
+```
 
 ### Tasks repartition
-à compléter
-
-## Technologies used
-à compléter
+...
