@@ -35,6 +35,7 @@ via Ollama or integrated through Hugging Face / GCP endpoints.
 
 ## RAG Pipeline Architecture
 
+```
 ESILV Web Scraping
 ↓
 Text Cleaning & Normalization
@@ -52,7 +53,7 @@ Specialized Agents
 LLM (Llama 3.x)
 ↓
 Streamlit Interface
-
+```
 
 ---
 
@@ -66,12 +67,6 @@ Streamlit Interface
 - https://www.esilv.fr/entreprises-debouches/
 - https://www.esilv.fr/recherche/
 - https://www.esilv.fr/international/
-
-### Why Targeted Scraping?
-
-- Avoid noise (news, blog posts, non-institutional content)
-- Focus only on **stable and official pages**
-- Maintain full control over data structure for RAG optimization
 
 ### Scraper Features
 
@@ -142,6 +137,7 @@ Before generating embeddings, the text undergoes several preprocessing steps:
 
 ## 5. Project Structure
 
+```
 ESILV-Smart-Assistant/
 │
 ├── data/
@@ -162,6 +158,7 @@ ESILV-Smart-Assistant/
 ├── models/ # Managed automatically by Ollama
 ├── requirements.txt
 └── README.md
+```
 
 ---
 
