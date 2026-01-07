@@ -236,6 +236,7 @@ Several safeguards are implemented:
 ### Launch
 
 ```bash
+ollama pull llama3.2:3b
 pip install -r requirements.txt
 streamlit run code/app/streamlit_app.py
 ```
